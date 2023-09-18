@@ -13,9 +13,3 @@ types:
   - deps
 scopes:
   - dev
-  - generate-changelog
-  - last-tag
-  - next-tag
-  - notify
-  - sync-check
-  - core
