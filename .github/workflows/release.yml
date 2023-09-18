@@ -1,0 +1,47 @@
+name: Release
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - '**'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Parse
+        id: parse
+        uses: alorel-actions/semantic-release-lite@v0
+        with:
+          minor-types: |
+            feat: Features
+          patch-types: |
+            fix: Bug Fixes
+          trivial-types: |
+            chore: Maintenance
+            deps: Dependency updates
+            ci: CI & Build
+            build: CI & Build
+            refactor: Refactors
+            docs: Documentation
+
+      - name: Release
+        uses: ./.github/actions/release
+        if: ${{ steps.parse.outputs.should-release && github.ref == 'refs/heads/master' }}
+        with:
+          major: ${{ steps.parse.outputs.next-version-major }}
+          minor: ${{ steps.parse.outputs.next-version-minor }}
+          patch: ${{ steps.parse.outputs.next-version-patch }}
+          changelog: ${{ steps.parse.outputs.changelog }}
+          issues-closed: ${{ steps.parse.outputs.issues-closed }}

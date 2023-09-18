@@ -1,0 +1,74 @@
+name: Release
+description: Releases changes to the branch
+inputs:
+  changelog:
+    description: changelog
+    required: true
+  major:
+    required: true
+    description: major version
+  minor:
+    required: true
+    description: minor version
+  patch:
+    required: true
+    description: patch version
+  issues-closed:
+    description: Issues closed by the release
+runs:
+  using: composite
+  steps:
+    - uses: ./
+      name: Identity
+
+    - shell: bash
+      run: git tag v${{ inputs.major }} --force
+
+    - shell: bash
+      run: git tag v${{ inputs.major }}.${{ inputs.minor }} --force
+
+    - shell: bash
+      run: git tag v${{ inputs.major }}.${{ inputs.minor }}.${{ inputs.patch }}
+
+    - shell: bash
+      run: git push
+
+    - shell: bash
+      run: git push --tags --force
+
+    - uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        prerelease: false
+        generateReleaseNotes: false
+        makeLatest: false
+        commit: ${{ github.sha }}
+        body: Alias for `v${{ inputs.major }}.${{ inputs.minor }}.${{ inputs.patch }}`
+        tag: v${{ inputs.major }}
+
+    - uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        prerelease: false
+        generateReleaseNotes: false
+        makeLatest: false
+        commit: ${{ github.sha }}
+        body: Alias for `v${{ inputs.major }}.${{ inputs.minor }}.${{ inputs.patch }}`
+        tag: v${{ inputs.major }}.${{ inputs.minor }}
+
+    - uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: false
+        prerelease: false
+        generateReleaseNotes: false
+        commit: ${{ github.sha }}
+        body: ${{ inputs.changelog }}
+        tag: v${{ inputs.major }}.${{ inputs.minor }}.${{ inputs.patch }}
+
+    - name: Notify
+      if: ${{ inputs.issues-closed }}
+      uses: ./dist/notify
+      with:
+        allow-out-of-sync: true
+        tag: v${{ inputs.major }}.${{ inputs.minor }}.${{ inputs.patch }}
+        issues: ${{ inputs.issues-closed }}

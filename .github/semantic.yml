@@ -1,0 +1,21 @@
+# https://github.com/Ezard/semantic-prs
+
+enabled: true
+commitsOnly: true
+types:
+  - feat
+  - fix
+  - docs
+  - refactor
+  - build
+  - ci
+  - chore
+  - deps
+scopes:
+  - dev
+  - generate-changelog
+  - last-tag
+  - next-tag
+  - notify
+  - sync-check
+  - core
