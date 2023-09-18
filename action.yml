@@ -1,5 +1,5 @@
-name: GitHub Actions Bot git auth
-description: Quick shortcut action for authenticating as the GitHub Actions bot through `git config`.
+name: GitHub Actions Bot git identity
+description: Quick shortcut action for identifying as the GitHub Actions bot through `git config`
 inputs:
   working-directory:
     description: run git config in the specified directory
