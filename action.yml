@@ -1,0 +1,21 @@
+name: GitHub Actions Bot git auth
+description: Quick shortcut action for authenticating as the GitHub Actions bot through `git config`.
+inputs:
+  working-directory:
+    description: run git config in the specified directory
+  global:
+    description: run git config --global instead of git config
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      if: ${{ inputs.global == 'true' || inputs.global == 'TRUE' }}
+      run: >
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com' &&
+        git config --global user.name 'github-actions[bot]'
+    - shell: bash
+      if: ${{ inputs.global != 'true' && inputs.global != 'TRUE' }}
+      working-directory: ${{ inputs.working-directory }}
+      run: >
+        git config user.email 'github-actions[bot]@users.noreply.github.com' &&
+        git config user.name 'github-actions[bot]'
